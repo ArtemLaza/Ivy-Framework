@@ -68,13 +68,12 @@ const variantMap: VariantMap = {
     </h4>
   ),
   Block: ({ children, className, style }) => (
-    <div className={cn('flex items-center text-sm', className)} style={style}>
-      <span
-        className="overflow-hidden whitespace-nowrap text-ellipsis"
-        style={{ maxWidth: '100%' }}
-      >
-        {children}
-      </span>
+    <div
+      className={cn('flex items-center text-sm', className)}
+      style={style}
+      title={typeof children === 'string' ? children : undefined}
+    >
+      <span className="overflow-hidden text-ellipsis ">{children}</span>
     </div>
   ),
   P: ({ children, className, style }) => (
