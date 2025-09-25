@@ -883,6 +883,7 @@ const SelectVariant: React.FC<SelectInputWidgetProps> = ({
           <SelectTrigger
             className={cn('relative', invalid && inputStyles.invalidInput)}
             size={size}
+            hasClearButton={(nullable && hasValue && !disabled) || !!invalid}
           >
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>

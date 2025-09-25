@@ -25,8 +25,10 @@ const SelectValue = SelectPrimitive.Value;
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> &
-    VariantProps<typeof selectTriggerVariants>
->(({ className, size, children, ...props }, ref) => {
+    VariantProps<typeof selectTriggerVariants> & {
+      hasClearButton?: boolean;
+    }
+>(({ className, size, children, hasClearButton = false, ...props }, ref) => {
   const spanRef = React.useRef<HTMLSpanElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
   const [showTooltip, setShowTooltip] = React.useState(false);
@@ -57,7 +59,10 @@ const SelectTrigger = React.forwardRef<
           >
             <span
               ref={spanRef}
-              className="overflow-hidden text-ellipsis whitespace-nowrap min-w-0"
+              className={cn(
+                'overflow-hidden text-ellipsis whitespace-nowrap min-w-0',
+                hasClearButton && 'pr-8'
+              )}
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
             >
