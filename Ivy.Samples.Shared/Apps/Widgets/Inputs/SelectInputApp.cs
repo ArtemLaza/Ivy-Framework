@@ -39,12 +39,23 @@ public class SelectInputApp : SampleBase
         Yellow
     }
 
+    private enum FontFamilies
+    {
+        Arial,
+        TimesNewRoman,
+        ComicSansMS,
+        VeryLongFontFamilyNameForTestingTooltip,
+        AnotherExtremelyLongFontNameThatShouldTriggerTruncation,
+        SuperLongFontNameThatDemonstratesTooltipFunctionality
+    }
+
     protected override object? BuildSample()
     {
         var variants = CreateVariantsSection();
         var multiSelectVariants = CreateMultiSelectVariantsSection();
         var dataBinding = CreateDataBindingTests();
         var nullableTest = CreateNullableTestSection();
+        var fontTest = CreateFontTestSection();
 
         return Layout.Vertical()
                | Text.H2("Sizes")
@@ -58,6 +69,8 @@ public class SelectInputApp : SampleBase
                | multiSelectVariants
                | Text.H2("Data Binding")
                | dataBinding
+               | Text.H2("Font Families Test (Long Text)")
+               | fontTest
                ;
     }
 
@@ -426,6 +439,23 @@ public class SelectInputApp : SampleBase
                 : Text.InlineCode($"[{list.Count} items]"),
             _ => Text.InlineCode(value.ToString()!)
         };
+    }
+
+    private object CreateFontTestSection()
+    {
+        var nullableFontState = UseState((FontFamilies?)null);
+        var nonNullableFontState = UseState(FontFamilies.Arial);
+        var fontOptions = typeof(FontFamilies).ToOptions();
+
+        return Layout.Vertical()
+             | Text.P("This section demonstrates how SelectInput handles long text with nullable and non-nullable options.")
+             | (Layout.Grid().Columns(2)
+                  | Text.InlineCode("Nullable")
+                  | Text.InlineCode("Non-Nullable")
+
+                  | nullableFontState.ToSelectInput(fontOptions)
+                  | nonNullableFontState.ToSelectInput(fontOptions))
+             | Text.H1(" ");
     }
 }
 
