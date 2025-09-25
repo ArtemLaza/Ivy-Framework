@@ -34,7 +34,7 @@ public class SelectInputApp : SampleBase
     private enum Colors
     {
         Red,
-        Green,
+        Greeeeeeeeeeeeeeeeeeeen,
         Blue,
         Yellow
     }
@@ -397,7 +397,7 @@ public class SelectInputApp : SampleBase
                | Text.InlineCode("Toggle")
 
                | Text.InlineCode("Nullable")
-               | nullableColorState.ToSelectInput(colorOptions)
+               | nullableColorState.ToSelectInput(colorOptions).Large()
                | nullableColorState
                     .ToSelectInput(colorOptions)
                     .Variant(SelectInputs.List)

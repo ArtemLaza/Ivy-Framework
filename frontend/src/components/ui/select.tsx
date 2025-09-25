@@ -9,6 +9,12 @@ import {
   selectContentVariants,
   selectItemVariants,
 } from './select/variants';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const Select = SelectPrimitive.Root;
 
@@ -20,18 +26,57 @@ const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> &
     VariantProps<typeof selectTriggerVariants>
->(({ className, size, children, ...props }, ref) => (
-  <SelectPrimitive.Trigger
-    ref={ref}
-    className={cn(selectTriggerVariants({ size, className }))}
-    {...props}
-  >
-    {children}
-    <SelectPrimitive.Icon asChild>
-      <ChevronDown className="h-4 w-4 opacity-50" />
-    </SelectPrimitive.Icon>
-  </SelectPrimitive.Trigger>
-));
+>(({ className, size, children, ...props }, ref) => {
+  const spanRef = React.useRef<HTMLSpanElement>(null);
+  const [isTruncated, setIsTruncated] = React.useState(false);
+  const [showTooltip, setShowTooltip] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkTruncation = () => {
+      const el = spanRef.current;
+      if (el) {
+        setIsTruncated(el.scrollWidth > el.clientWidth);
+      }
+    };
+    checkTruncation();
+    // Optionally, listen for window resize to re-check truncation
+    window.addEventListener('resize', checkTruncation);
+    return () => {
+      window.removeEventListener('resize', checkTruncation);
+    };
+  }, [children]);
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <SelectPrimitive.Trigger
+            ref={ref}
+            className={cn(selectTriggerVariants({ size, className }))}
+            {...props}
+          >
+            <span
+              ref={spanRef}
+              className="overflow-hidden text-ellipsis whitespace-nowrap min-w-0"
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
+              {children}
+            </span>
+            <SelectPrimitive.Icon asChild>
+              <ChevronDown className="h-4 w-4 opacity-50" />
+            </SelectPrimitive.Icon>
+          </SelectPrimitive.Trigger>
+        </TooltipTrigger>
+        {showTooltip && isTruncated && typeof children === 'string' && (
+          <TooltipContent className="bg-popover text-popover-foreground shadow-md">
+            {children}
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
+  );
+});
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 const SelectScrollUpButton = React.forwardRef<
