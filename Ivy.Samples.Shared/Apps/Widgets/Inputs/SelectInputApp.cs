@@ -34,7 +34,7 @@ public class SelectInputApp : SampleBase
     private enum Colors
     {
         Red,
-        Gren,
+        Green,
         Blue,
         Yellow
     }

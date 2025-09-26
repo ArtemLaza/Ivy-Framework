@@ -41,7 +41,7 @@ const SelectTrigger = React.forwardRef<
       }
     };
     checkTruncation();
-    // Optionally, listen for window resize to re-check truncation
+    // Always listen for window resize to re-check truncation
     window.addEventListener('resize', checkTruncation);
     return () => {
       window.removeEventListener('resize', checkTruncation);
@@ -73,7 +73,7 @@ const SelectTrigger = React.forwardRef<
             </SelectPrimitive.Icon>
           </SelectPrimitive.Trigger>
         </TooltipTrigger>
-        {showTooltip && isTruncated && typeof children === 'string' && (
+        {showTooltip && isTruncated && (
           <TooltipContent className="bg-popover text-popover-foreground shadow-md">
             {children}
           </TooltipContent>
