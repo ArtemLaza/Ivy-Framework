@@ -31,22 +31,33 @@ const SelectTrigger = React.forwardRef<
 >(({ className, size, children, hasClearButton = false, ...props }, ref) => {
   const spanRef = React.useRef<HTMLSpanElement>(null);
   const [isTruncated, setIsTruncated] = React.useState(false);
-  const [showTooltip, setShowTooltip] = React.useState(false);
+  const [tooltipContent, setTooltipContent] = React.useState('');
+
+  const checkTruncation = React.useCallback(() => {
+    const el = spanRef.current;
+    if (el) {
+      setIsTruncated(el.scrollWidth > el.clientWidth);
+      setTooltipContent(el.textContent || el.innerText || '');
+    }
+  }, []);
 
   React.useEffect(() => {
-    const checkTruncation = () => {
-      const el = spanRef.current;
-      if (el) {
-        setIsTruncated(el.scrollWidth > el.clientWidth);
-      }
-    };
-    checkTruncation();
-    // Always listen for window resize to re-check truncation
-    window.addEventListener('resize', checkTruncation);
+    // Check truncation after DOM is updated
+    const timeoutId = setTimeout(checkTruncation, 0);
+    return () => clearTimeout(timeoutId);
+  }, [children, checkTruncation]);
+
+  // Also check on resize
+  React.useEffect(() => {
+    const resizeObserver = new ResizeObserver(checkTruncation);
+    const el = spanRef.current;
+    if (el) {
+      resizeObserver.observe(el);
+    }
     return () => {
-      window.removeEventListener('resize', checkTruncation);
+      resizeObserver.disconnect();
     };
-  }, [children]);
+  }, [checkTruncation]);
 
   return (
     <TooltipProvider>
@@ -63,8 +74,6 @@ const SelectTrigger = React.forwardRef<
                 'overflow-hidden text-ellipsis whitespace-nowrap min-w-0',
                 hasClearButton && 'pr-8'
               )}
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
             >
               {children}
             </span>
@@ -73,9 +82,9 @@ const SelectTrigger = React.forwardRef<
             </SelectPrimitive.Icon>
           </SelectPrimitive.Trigger>
         </TooltipTrigger>
-        {showTooltip && isTruncated && (
+        {isTruncated && tooltipContent && (
           <TooltipContent className="bg-popover text-popover-foreground shadow-md">
-            {children}
+            {tooltipContent}
           </TooltipContent>
         )}
       </Tooltip>

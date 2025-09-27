@@ -455,7 +455,7 @@ public class SelectInputApp : SampleBase
 
                   | nullableFontState.ToSelectInput(fontOptions)
                   | nonNullableFontState.ToSelectInput(fontOptions))
-             | Text.H1(" ");
+             | new Spacer().Height(20); //space for indentation at the bottom of the page
     }
 }
 
